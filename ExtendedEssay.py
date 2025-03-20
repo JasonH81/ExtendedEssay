@@ -1,18 +1,17 @@
 import tensorflow as tf
 from tensorflow import keras
-
-from tensorflow.python.keras.layers import Dense
-from tensorflow.python.keras import models
-from tensorflow.python.keras import layers
+from tensorflow.keras import layers, models
 from matplotlib import pyplot as plt
-
 from tensorflow.keras.datasets import mnist
 
 # Data Set-up
 img_rows, img_cols = 28, 28
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+
 train_images = train_images.reshape(train_images.shape[0], img_rows, img_cols, 1)
 test_images = test_images.reshape(test_images.shape[0], img_rows, img_cols, 1)
+
+
 input_shape = (img_rows, img_cols, 1)
 
 train_images = train_images.astype('float32')
@@ -34,10 +33,9 @@ model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 model.add(layers.Flatten())
 model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(10))
-model.compile(optimizer='adam', loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
-history = model.fit(train_images, train_labels, epochs=10, validation_data=(test_images, test_labels))
+model.add(layers.Dense(10, activation='softmax'))
 
-model.summary()
-
-# Plotting image
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.fit(train_images, train_labels, batch_size=64, epochs=epochs, validation_data=(test_images, test_labels), shuffle=True)
+test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
+print(f"Test Loss: {test_loss}, Test Accuracy: {test_acc}")
